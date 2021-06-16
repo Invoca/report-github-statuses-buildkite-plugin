@@ -1,6 +1,8 @@
 #!/bin/bash
 
+set -exo pipefail
+
 PLUGIN_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)/.."
 
 BUNDLE_GEMFILE=$PLUGIN_DIR/Gemfile bundle install --quiet
-BUNDLE_GEMFILE=$PLUGIN_DIR/Gemfile bundle exec $PLUGIN_DIR/bin/report_statuses.rb
+BUNDLE_GEMFILE=$PLUGIN_DIR/Gemfile bundle exec ruby $PLUGIN_DIR/lib/report_github_statuses.rb

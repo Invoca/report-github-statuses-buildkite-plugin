@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'report_github_statuses/runner'
+require_relative './report_github_statuses/runner'
 
-module ReportGithubStatuses; end
+ReportGithubStatuses::Runner.run
