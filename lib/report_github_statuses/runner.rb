@@ -47,9 +47,9 @@ module ReportGithubStatuses
         skipped_steps_for_status = steps_for_status(skipped_steps, config)
 
         if failed_steps_for_status.any?
-          report_status('failure', config.dig("description", "failure").gsub("{{count}}", failed_steps_for_status.count.to_s))
+          report_status(context, 'failure', config.dig("description", "failure").gsub("{{count}}", failed_steps_for_status.count.to_s))
         elsif skipped_steps_for_status.empty?
-          report_status('success', config.dig("description", "success"))
+          report_status(context, 'success', config.dig("description", "success"))
         end
       end
     end
