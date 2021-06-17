@@ -1,0 +1,12 @@
+---
+name: Report Github Statuses
+description: Report github statuses against the current BUILDKIT_COMMIT based on the outcome of various steps
+author: https://github.com/invoca
+requirements:
+- ruby
+configuration:
+  properties:
+    step_status_config_path:
+      type: string
+      default: .buildkite/step_status_config.yml
+  additionalProperties: false
