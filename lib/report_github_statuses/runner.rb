@@ -22,33 +22,33 @@ module ReportGithubStatuses
     end
 
     def run
-      passed_jobs, failed_and_skipped_jobs = all_jobs_for_build.partition do |job|
+      passed_and_skipped_jobs, failed_and_broken_jobs = all_jobs_for_build.partition do |job|
         job.dig("node", "state") == "SKIPPED" || job.dig("node", "passed")
       end
 
-      passed_labels = passed_jobs.map { |job| label_for_job(job) }
-      failed_and_skipped_jobs.reject! { |job| label_for_job(job).in?(passed_labels) }
+      passed_and_skipped_labels = passed_and_skipped_jobs.map { |job| label_for_job(job) }
+      failed_and_broken_jobs.reject! { |job| label_for_job(job).in?(passed_and_skipped_labels) }
 
-      skipped_jobs, failed_jobs = failed_and_skipped_jobs.partition do |job|
+      broken_jobs, failed_jobs = failed_and_broken_jobs.partition do |job|
         job.dig("node", "state") == "BROKEN"
       end
 
       failed_steps  = failed_jobs.map { |job| label_for_job(job) }
-      skipped_steps = skipped_jobs.map { |job| label_for_job(job) }
+      broken_steps  = broken_jobs.map { |job| label_for_job(job) }
 
-      report_statuses(failed_steps, skipped_steps)
+      report_statuses(failed_steps, broken_steps)
     end
 
     private
 
-    def report_statuses(failed_steps, skipped_steps)
+    def report_statuses(failed_steps, broken_steps)
       step_status_config["statuses"].each do |context, config|
         failed_steps_for_status  = steps_for_status(failed_steps, config)
-        skipped_steps_for_status = steps_for_status(skipped_steps, config)
+        broken_steps_for_status = steps_for_status(broken_steps, config)
 
         if failed_steps_for_status.any?
           report_status(context, 'failure', config.dig("description", "failure").gsub("{{count}}", failed_steps_for_status.count.to_s))
-        elsif skipped_steps_for_status.empty?
+        elsif broken_steps_for_status.empty?
           report_status(context, 'success', config.dig("description", "success"))
         end
       end
